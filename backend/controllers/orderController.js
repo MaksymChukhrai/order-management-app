@@ -12,14 +12,12 @@ const createOrder = async (req, res, next) => {
     const { userId, productId, quantity } = req.body;
 
     if (!userId || !productId || quantity === undefined) {
-      res.status(400);
-      throw new Error('Please provide userId, productId and quantity');
+      return next(new Error('Please provide userId, productId and quantity'));
     }
 
     // Check if quantity is a positive integer
     if (!Number.isInteger(quantity) || quantity <= 0) {
-      res.status(400);
-      throw new Error('Quantity must be greater than 0');
+      return next(new Error('Quantity must be greater than 0'));
     }
 
     // Execute the order creation within a transaction
@@ -28,30 +26,20 @@ const createOrder = async (req, res, next) => {
       const user = await User.findById(userId).session(session);
       const product = await Product.findById(productId).session(session);
 
-      // Check if user and product exist
-      if (!user) {
-        res.status(404);
-        throw new Error('User not found');
-      }
-
-      if (!product) {
-        res.status(404);
-        throw new Error('Product not found');
-      }
+      if (!user) return next(new Error('User not found'));
+      if (!product) return next(new Error('Product not found'));
 
       // Calculate total price
       const totalPrice = product.price * quantity;
 
       // Check if user has enough balance
       if (user.balance < totalPrice) {
-        res.status(400);
-        throw new Error('Insufficient balance');
+        return next(new Error('Insufficient balance'));
       }
 
       // Check if product has enough stock
       if (product.stock < quantity) {
-        res.status(400);
-        throw new Error('Product out of stock');
+        return next(new Error('Product out of stock'));
       }
 
       // Deduct balance and update product stock
@@ -61,14 +49,10 @@ const createOrder = async (req, res, next) => {
       await product.save({ session });
 
       // Create order
-      const newOrder = await Order.create([
-        {
-          userId,
-          productId,
-          quantity,
-          totalPrice,
-        },
-      ], { session });
+      const newOrder = await Order.create(
+        [{ userId, productId, quantity, totalPrice }],
+        { session }
+      );
 
       return newOrder[0];
     });
@@ -87,16 +71,19 @@ const getUserOrders = async (req, res, next) => {
   try {
     const { userId } = req.params;
 
-    // Check if user exists
     const user = await User.findById(userId);
-    if (!user) {
-      res.status(404);
-      throw new Error('User not found');
-    }
+    if (!user) return next(new Error('User not found'));
 
     const orders = await Order.find({ userId })
       .populate('productId', 'name price')
+      .populate('userId', 'name email') // добавляем пользователя
       .sort('-createdAt');
+
+    if (!orders.length) {
+      logger.info(`No orders found for user: ${userId}`);
+    } else {
+      logger.info(`Orders retrieved for user ${userId}: ${orders.length} orders`);
+    }
 
     res.status(200).json(orders);
   } catch (error) {

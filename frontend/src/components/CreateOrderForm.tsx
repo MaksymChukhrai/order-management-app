@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApi } from '../hooks/useApi';
 import { useAppContext } from '../contexts/useAppContext';
 import UserSelector from './UserSelector';
@@ -8,7 +8,7 @@ import ErrorAlert from './ErrorAlert';
 const CreateOrderForm: React.FC = () => {
   const { currentUser, refreshUser } = useAppContext();
   const { createOrder } = useApi();
-  const [selectedUser, setSelectedUser] = useState<string>('');
+  const [selectedUser, setSelectedUser] = useState<string>(currentUser?._id || '');
   const [productId, setProductId] = useState<string>('');
   const [price, setPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number | ''>('');
@@ -17,6 +17,13 @@ const CreateOrderForm: React.FC = () => {
   const [success, setSuccess] = useState<boolean>(false);
 
   const totalPrice = price * (quantity || 0);
+
+  // 🔥 Синхронизируем selectedUser с currentUser при изменении
+  useEffect(() => {
+    if (currentUser) {
+      setSelectedUser(currentUser._id);
+    }
+  }, [currentUser]);
 
   const handleProductChange = (id: string, productPrice: number) => {
     setProductId(id);
@@ -53,15 +60,11 @@ const CreateOrderForm: React.FC = () => {
 
       setSuccess(true);
       setQuantity(1);
+      
+      // 🔥 Обновляем баланс выбранного пользователя после заказа
       await refreshUser();
     } catch (err) {
-      if (err instanceof Error && err.message.includes('replica set member or mongos')) {
-        setSuccess(true); // Показываем успешное сообщение вместо ошибки
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('Failed to create order');
-      }
+      setError(err instanceof Error ? err.message : 'Failed to create order');
     } finally {
       setLoading(false);
     }
@@ -69,7 +72,6 @@ const CreateOrderForm: React.FC = () => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md">
-
       {error && <ErrorAlert message={error} onClose={() => setError(null)} />}
       {success && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
@@ -83,6 +85,7 @@ const CreateOrderForm: React.FC = () => {
         </div>
       )}
       <form onSubmit={handleSubmit}>
+        {/* 🔥 Передаем selectedUser, но теперь он синхронизирован с currentUser */}
         <UserSelector selectedUser={selectedUser} onSelectUser={setSelectedUser} />
         <ProductSelector onChange={handleProductChange} value={productId} />
         <div className="mb-4">
@@ -119,3 +122,4 @@ const CreateOrderForm: React.FC = () => {
 };
 
 export default CreateOrderForm;
+

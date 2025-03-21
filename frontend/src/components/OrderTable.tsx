@@ -1,33 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Order } from '../types';
 
-const OrderTable: React.FC<{ selectedUser: string }> = ({ selectedUser }) => {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+interface OrderTableProps {
+  orders: Order[];
+  loading: boolean;
+  error: string | null;
+}
 
-  useEffect(() => {
-    if (!selectedUser) return;
-
-    const fetchOrders = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const response = await fetch(`/api/orders/${selectedUser}`);
-        if (!response.ok) throw new Error('Failed to fetch orders');
-        const data = await response.json();
-        console.log("Fetched Orders:", data);
-        setOrders(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, [selectedUser]);
-
+const OrderTable: React.FC<OrderTableProps> = ({ orders, loading, error }) => {
   if (loading) {
     return <div className="text-center py-4">Loading orders...</div>;
   }
@@ -40,6 +20,7 @@ const OrderTable: React.FC<{ selectedUser: string }> = ({ selectedUser }) => {
     return <div className="text-center py-4 text-gray-500">No orders found</div>;
   }
 
+  console.log("Rendering orders, count:", orders.length);
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white border border-gray-300">
