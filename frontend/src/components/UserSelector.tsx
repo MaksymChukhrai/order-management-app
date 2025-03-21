@@ -1,53 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { User } from '../types';
-import { getUsers } from '../services/api';
-import { UserSelectorProps } from '../types';
+// frontend/src/components/UserSelector.tsx
+import React from 'react';
+import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { useUser } from '../contexts/UserContext';
 
+const UserSelector: React.FC = () => {
+  const { currentUser, users, changeUser } = useUser();
+  
+  if (!currentUser || users.length === 0) {
+    return <div>Loading users...</div>;
+  }
 
-
-const UserSelector: React.FC<UserSelectorProps> = ({ selectedUser, onSelectUser }) => {
-
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const loadUsers = async () => {
-      try {
-        const data = await getUsers();
-        setUsers(data);
-      } catch (err) {
-        setError('Failed to load users');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadUsers();
-  }, []);
-
-  if (loading) return <p>Loading users...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  const handleChange = (event: SelectChangeEvent<string>) => {
+    changeUser(event.target.value);
+  };
 
   return (
-    <div>
-      <label htmlFor="user" className="block text-sm font-medium text-gray-700">
-        Select User:
-      </label>
-      <select
-        id="user"
-        value={selectedUser}
-        onChange={(e) => onSelectUser(e.target.value)}
-        className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm"
+    <FormControl fullWidth margin="normal">
+      <InputLabel>Select User</InputLabel>
+      <Select
+        value={currentUser._id}
+        onChange={handleChange}
       >
-        <option value="">Choose a user</option>
         {users.map((user) => (
-          <option key={user._id} value={user._id}>
-            {user.name} ({user.email})
-          </option>
+          <MenuItem key={user._id} value={user._id}>
+            {user.name} ({user.email}) - Balance: ${user.balance.toFixed(2)}
+          </MenuItem>
         ))}
-      </select>
-    </div>
+      </Select>
+    </FormControl>
   );
 };
 

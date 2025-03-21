@@ -39,3 +39,10 @@ export interface User {
     message: string;
     stack?: string;
   }
+// Типы для контекста пользователя
+export interface UserContextType {
+  currentUser: User | null;
+  users: User[];
+  loading: boolean;
+  changeUser: (userId: string) => void;
+}
