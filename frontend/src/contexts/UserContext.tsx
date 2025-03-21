@@ -1,7 +1,7 @@
-// frontend/src/contexts/UserContext.tsx
+// frontend/src/contexts/UserContext.tsx (обновленная версия)
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
-import axios from 'axios';
 import { User, UserContextType } from '../types';
+import { getUsers } from '../services/api';
 
 const UserContext = createContext<UserContextType | null>(null);
 
@@ -17,41 +17,30 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   useEffect(() => {
     // Загрузка списка пользователей
     const fetchUsers = async () => {
-      setLoading(true);
       try {
-        // Обновляем URL API, убедившись, что он указывает на правильный бэкенд
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-        console.log('Fetching users from:', `${apiUrl}/api/users`);
+        setLoading(true);
+        const fetchedUsers = await getUsers();
+        setUsers(fetchedUsers);
         
-        const response = await axios.get<User[]>(`${apiUrl}/api/users`);
-        console.log('Users response:', response.data);
+        // Проверяем localStorage на наличие сохраненного пользователя
+        const savedUserId = localStorage.getItem('currentUserId');
         
-        if (Array.isArray(response.data)) {
-          setUsers(response.data);
-          // Установим первого пользователя по умолчанию
-          if (response.data.length > 0 && !currentUser) {
-            setCurrentUser(response.data[0]);
+        if (savedUserId && fetchedUsers.length > 0) {
+          const savedUser = fetchedUsers.find(u => u._id === savedUserId);
+          if (savedUser) {
+            setCurrentUser(savedUser);
+          } else {
+            // Если сохраненного пользователя не найдено, берем первого
+            setCurrentUser(fetchedUsers[0]);
           }
-        } else {
-          console.error('Users data is not an array:', response.data);
-          // Установка мокового списка пользователей для отладки, если API недоступен
-          const mockUsers: User[] = [
-            { _id: '1', name: 'John Doe', email: 'john.doe@example.com', balance: 100 },
-            { _id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', balance: 200 }
-          ];
-          setUsers(mockUsers);
-          setCurrentUser(mockUsers[0]);
+        } else if (fetchedUsers.length > 0) {
+          // Если нет сохраненного пользователя, берем первого из списка
+          setCurrentUser(fetchedUsers[0]);
         }
+        
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching users:', error);
-        // Установка мокового списка пользователей для отладки, если API недоступен
-        const mockUsers: User[] = [
-          { _id: '1', name: 'John Doe', email: 'john.doe@example.com', balance: 100 },
-          { _id: '2', name: 'Jane Smith', email: 'jane.smith@example.com', balance: 200 }
-        ];
-        setUsers(mockUsers);
-        setCurrentUser(mockUsers[0]);
-      } finally {
         setLoading(false);
       }
     };
@@ -63,20 +52,40 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     const user = users.find(u => u._id === userId);
     if (user) {
       setCurrentUser(user);
-      console.log('User changed to:', user.name);
+      // Сохраняем выбранного пользователя в localStorage
+      localStorage.setItem('currentUserId', userId);
     }
   };
 
-  // Предоставляем моковые данные, если реальные не загрузились
-  const contextValue = {
-    currentUser,
-    users: Array.isArray(users) ? users : [],
-    loading,
-    changeUser
+  // Функция для обновления текущего пользователя (его баланса и т.д.)
+  const refreshCurrentUser = async () => {
+    if (currentUser) {
+      try {
+        setLoading(true);
+        const updatedUsers = await getUsers();
+        setUsers(updatedUsers);
+        
+        const updatedUser = updatedUsers.find(u => u._id === currentUser._id);
+        if (updatedUser) {
+          setCurrentUser(updatedUser);
+        }
+        
+        setLoading(false);
+      } catch (error) {
+        console.error('Error refreshing user:', error);
+        setLoading(false);
+      }
+    }
   };
 
   return (
-    <UserContext.Provider value={contextValue}>
+    <UserContext.Provider value={{ 
+      currentUser, 
+      users, 
+      loading, 
+      changeUser,
+      refreshCurrentUser 
+    }}>
       {children}
     </UserContext.Provider>
   );

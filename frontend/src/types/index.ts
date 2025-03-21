@@ -45,4 +45,10 @@ export interface UserContextType {
   users: User[];
   loading: boolean;
   changeUser: (userId: string) => void;
+  refreshCurrentUser: () => Promise<void>; // Добавляем функцию обновления пользователя
+}
+export interface CreateOrderDto {
+  userId: string;
+  productId: string;
+  quantity: number;
 }
