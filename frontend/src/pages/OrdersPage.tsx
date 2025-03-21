@@ -1,30 +1,41 @@
 // frontend/src/pages/OrdersPage.tsx
 import React, { useEffect, useState } from 'react';
-import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Typography, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, Box } from '@mui/material';
 import axios from 'axios';
 import { useUser } from '../contexts/UserContext';
-import { Order, Product } from '../types';
-
-interface PopulatedOrder extends Omit<Order, 'productId'> {
-  productId: Product;
-}
+import { Order } from '../types';
 
 const OrdersPage: React.FC = () => {
-  const [orders, setOrders] = useState<PopulatedOrder[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const { currentUser } = useUser();
 
   useEffect(() => {
     const fetchOrders = async () => {
-      if (!currentUser) return;
+      if (!currentUser) {
+        setLoading(false);
+        return;
+      }
       
       setLoading(true);
       try {
-        const response = await axios.get<PopulatedOrder[]>(`/api/orders/${currentUser._id}`);
-        setOrders(response.data);
-        setLoading(false);
+        // Обновляем URL API, убедившись, что он указывает на правильный бэкенд
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        console.log('Fetching orders for user:', currentUser._id);
+        
+        const response = await axios.get<Order[]>(`${apiUrl}/api/orders/${currentUser._id}`);
+        console.log('Orders response:', response.data);
+        
+        if (Array.isArray(response.data)) {
+          setOrders(response.data);
+        } else {
+          console.error('Orders data is not an array:', response.data);
+          setOrders([]);
+        }
       } catch (error) {
         console.error('Error fetching orders:', error);
+        setOrders([]);
+      } finally {
         setLoading(false);
       }
     };
@@ -33,21 +44,33 @@ const OrdersPage: React.FC = () => {
   }, [currentUser]); // Перезагрузка при смене пользователя
 
   if (!currentUser) {
-    return <Typography>Please select a user</Typography>;
+    return (
+      <Paper sx={{ p: 2, mt: 3 }}>
+        <Typography>Please select a user</Typography>
+      </Paper>
+    );
   }
+
+  // Безопасный доступ к свойству balance
+  const userBalance = currentUser && typeof currentUser.balance === 'number' 
+    ? currentUser.balance.toFixed(2) 
+    : '0.00';
 
   return (
     <Paper sx={{ p: 2, mt: 3 }}>
       <Typography variant="h5" gutterBottom>
-        {currentUser.name}
+        {currentUser.name || 'User'}
       </Typography>
-      <Typography variant="subtitle1">{currentUser.email}</Typography>
+      <Typography variant="subtitle1">{currentUser.email || 'No email'}</Typography>
       
       <Typography variant="h6" sx={{ mt: 2 }}>
         Current Balance
       </Typography>
-      <Typography variant="h4" color={currentUser.balance > 0 ? 'primary' : 'error'}>
-        ${currentUser.balance.toFixed(2)}
+      <Typography 
+        variant="h4" 
+        color={currentUser && currentUser.balance > 0 ? 'primary' : 'error'}
+      >
+        ${userBalance}
       </Typography>
       
       <Typography variant="h6" sx={{ mt: 3 }}>
@@ -55,7 +78,9 @@ const OrdersPage: React.FC = () => {
       </Typography>
       
       {loading ? (
-        <Typography>Loading orders...</Typography>
+        <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+          <CircularProgress />
+        </Box>
       ) : orders.length === 0 ? (
         <Typography>No orders found</Typography>
       ) : (
@@ -70,14 +95,20 @@ const OrdersPage: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {orders.map((order) => (
-                <TableRow key={order._id}>
-                  <TableCell>{order.productId.name}</TableCell>
-                  <TableCell>{order.quantity}</TableCell>
-                  <TableCell>${order.totalPrice.toFixed(2)}</TableCell>
-                  <TableCell>{new Date(order.createdAt).toLocaleString()}</TableCell>
-                </TableRow>
-              ))}
+              {orders.map((order) => {
+                // Обрабатываем случай, когда productId может быть объектом или строкой
+                const productName = typeof order.productId === 'object' && order.productId ? 
+                  order.productId.name : 'Unknown product';
+                  
+                return (
+                  <TableRow key={order._id}>
+                    <TableCell>{productName}</TableCell>
+                    <TableCell>{order.quantity}</TableCell>
+                    <TableCell>${typeof order.totalPrice === 'number' ? order.totalPrice.toFixed(2) : order.totalPrice}</TableCell>
+                    <TableCell>{order.createdAt ? new Date(order.createdAt).toLocaleString() : 'Unknown date'}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

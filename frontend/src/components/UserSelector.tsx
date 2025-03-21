@@ -4,10 +4,15 @@ import { FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@m
 import { useUser } from '../contexts/UserContext';
 
 const UserSelector: React.FC = () => {
-  const { currentUser, users, changeUser } = useUser();
+  const { currentUser, users, loading, changeUser } = useUser();
   
-  if (!currentUser || users.length === 0) {
+  if (loading) {
     return <div>Loading users...</div>;
+  }
+  
+  // Проверка, что users - это массив
+  if (!Array.isArray(users) || users.length === 0) {
+    return <div>No users available</div>;
   }
 
   const handleChange = (event: SelectChangeEvent<string>) => {
@@ -18,7 +23,7 @@ const UserSelector: React.FC = () => {
     <FormControl fullWidth margin="normal">
       <InputLabel>Select User</InputLabel>
       <Select
-        value={currentUser._id}
+        value={currentUser?._id || ''}
         onChange={handleChange}
       >
         {users.map((user) => (
