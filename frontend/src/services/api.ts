@@ -37,6 +37,8 @@ export const createOrder = async (orderData: any): Promise<Order> => {
 };
 
 // Добавим новую функцию для сброса пользовательских заказов
-export const resetUserOrders = async (userId: string): Promise<void> => {
-  await api.post(`/users/${userId}/reset-orders`);
+export const resetUserOrders = async (userId: string): Promise<{message: string}> => {
+  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const response = await axios.delete(`${apiUrl}/api/orders/reset/${userId}`);
+  return response.data;
 };

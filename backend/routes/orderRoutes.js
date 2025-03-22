@@ -1,7 +1,7 @@
 // backend/routes/orderRoutes.js
 
 const express = require('express');
-const mongoose = require('mongoose'); // Добавляем импорт mongoose для сессий
+const mongoose = require('mongoose'); 
 const { createOrder, getUserOrders } = require('../controllers/orderController');
 const apiLimiter = require('../middleware/rateLimiter');
 // Импортируем необходимые модели
