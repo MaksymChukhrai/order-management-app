@@ -45,7 +45,8 @@ export interface UserContextType {
   users: User[];
   loading: boolean;
   changeUser: (userId: string) => void;
-  refreshCurrentUser: () => Promise<void>; // Добавляем функцию обновления пользователя
+  refreshCurrentUser: () => Promise<void>;
+  updateUserBalance: (newBalance: number) => void; 
 }
 export interface CreateOrderDto {
   userId: string;

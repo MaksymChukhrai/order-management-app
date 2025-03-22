@@ -1,4 +1,4 @@
-// frontend/src/contexts/UserContext.tsx (обновленная версия)
+// frontend/src/contexts/UserContext.tsx
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { User, UserContextType } from '../types';
 import { getUsers } from '../services/api';
@@ -57,6 +57,25 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
     }
   };
 
+  // Добавляем новую функцию для обновления баланса пользователя
+  const updateUserBalance = (newBalance: number) => {
+    if (currentUser) {
+      // Создаем обновленный объект пользователя с новым балансом
+      const updatedUser = {
+        ...currentUser,
+        balance: newBalance
+      };
+      
+      // Обновляем текущего пользователя
+      setCurrentUser(updatedUser);
+      
+      // Также обновляем пользователя в общем списке пользователей
+      setUsers(prevUsers => prevUsers.map(user => 
+        user._id === currentUser._id ? updatedUser : user
+      ));
+    }
+  };
+
   // Функция для обновления текущего пользователя (его баланса и т.д.)
   const refreshCurrentUser = async () => {
     if (currentUser) {
@@ -84,7 +103,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
       users, 
       loading, 
       changeUser,
-      refreshCurrentUser 
+      refreshCurrentUser,
+      updateUserBalance // Добавляем новую функцию в контекст
     }}>
       {children}
     </UserContext.Provider>

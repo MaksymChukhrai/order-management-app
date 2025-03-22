@@ -6,7 +6,7 @@ import { useUser } from '../contexts/UserContext';
 import { Product } from '../types';
 
 const OrderForm: React.FC<{ onOrderCreated: () => void }> = ({ onOrderCreated }) => {
-  const { currentUser } = useUser();
+  const { currentUser, updateUserBalance } = useUser(); // Добавляем updateUserBalance
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [quantity, setQuantity] = useState<number>(1);
@@ -85,11 +85,30 @@ const OrderForm: React.FC<{ onOrderCreated: () => void }> = ({ onOrderCreated })
       // Обновляем URL API, убедившись, что он указывает на правильный бэкенд
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       
-      await axios.post(`${apiUrl}/api/orders`, {
+      // Находим выбранный продукт для расчета стоимости
+      const productDetails = products.find(p => p._id === selectedProduct);
+      if (!productDetails) {
+        throw new Error('Product not found');
+      }
+      
+      // Рассчитываем общую стоимость заказа
+      const totalPrice = productDetails.price * quantity;
+      
+      // Отправляем запрос на создание заказа
+      const response = await axios.post(`${apiUrl}/api/orders`, {
         userId: currentUser._id,
         productId: selectedProduct,
         quantity
       });
+      
+      // После успешного создания заказа обновляем баланс пользователя
+      if (response.data && currentUser && typeof updateUserBalance === 'function') {
+        // Рассчитываем новый баланс
+        const newBalance = currentUser.balance - totalPrice;
+        
+        // Обновляем баланс в контексте
+        updateUserBalance(newBalance);
+      }
       
       setSuccess('Order placed successfully!');
       setSelectedProduct('');
