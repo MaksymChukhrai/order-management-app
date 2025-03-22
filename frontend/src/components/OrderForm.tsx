@@ -182,7 +182,7 @@ const OrderForm: React.FC<{ onOrderCreated: () => void }> = ({ onOrderCreated })
         sx={{ mt: 2 }}
         disabled={loading || !selectedProduct}
       >
-        {loading ? <CircularProgress size={24} /> : 'Place Order'}
+        {loading ? <CircularProgress size={24} /> : 'Submit Order'}
       </Button>
     </form>
   );
