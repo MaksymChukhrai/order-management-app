@@ -1,6 +1,7 @@
 // frontend/src/services/api.ts
 import axios from 'axios';
 import { User, Product, Order } from '../types';
+import { getEnv } from '../utils/environment';
 
 // Создаем instance axios с базовым URL
 export const api = axios.create({
@@ -38,7 +39,7 @@ export const createOrder = async (orderData: any): Promise<Order> => {
 
 // Добавим новую функцию для сброса пользовательских заказов
 export const resetUserOrders = async (userId: string): Promise<{message: string}> => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+  const apiUrl = getEnv('VITE_API_URL', 'http://localhost:5000');
   const response = await axios.delete(`${apiUrl}/api/orders/reset/${userId}`);
   return response.data;
 };
