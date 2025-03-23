@@ -17,7 +17,7 @@
     "test:frontend:coverage": "cd frontend && npm run test:coverage"
   },
   "keywords": ["react", "nodejs", "express", "mongodb", "fullstack"],
-  "author": "",
+  "author": "Maksym Chukhrai",
   "license": "ISC",
   "devDependencies": {
     "concurrently": "^9.1.2"
