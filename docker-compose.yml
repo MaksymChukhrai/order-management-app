@@ -8,15 +8,29 @@ services:
     environment:
       - NODE_ENV=development
       - MONGO_URI=mongodb://mongo:27017/order-management
+      # Добавляем для лога и отладки
+      - PORT=5000
     depends_on:
       - mongo
+    volumes:
+      # Для разработки: монтируем исходники для обновления в реальном времени
+      - ./backend:/app
+      # Исключаем node_modules, чтобы не перезаписывать их с хоста
+      - /app/node_modules
 
   frontend:
     build: ./frontend
     ports:
       - "5173:5173"
+    environment:
+      # Обеспечиваем правильный URL API для фронтенда
+      - VITE_API_URL=http://localhost:5000/api
     depends_on:
       - backend
+    volumes:
+      # Для разработки
+      - ./frontend:/app
+      - /app/node_modules
 
   mongo:
     image: mongo:6.0

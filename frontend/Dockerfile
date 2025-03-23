@@ -1,20 +1,14 @@
-# Используем Node.js образ
-FROM node:18
+FROM node:18-alpine
 
-# Устанавливаем рабочую директорию
 WORKDIR /app
 
-# Копируем package.json и package-lock.json
 COPY package*.json ./
 
-# Устанавливаем зависимости
 RUN npm install
 
-# Копируем код в контейнер
 COPY . .
 
-# Указываем порт для фронтенда
-EXPOSE 5173
+# Важно: добавляем опцию --host для правильного доступа в Docker
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
 
-# Запускаем Vite-сервер
-CMD ["npm", "run", "dev"]
+EXPOSE 5173
