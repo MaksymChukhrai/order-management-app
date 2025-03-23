@@ -77,7 +77,7 @@ const getUserOrders = async (req, res, next) => {
 
     const orders = await Order.find({ userId })
       .populate('productId', 'name price')
-      .populate('userId', 'name email') // добавляем пользователя
+      .populate('userId', 'name email') 
       .sort('-createdAt');
 
     if (!orders.length) {
