@@ -1,4 +1,3 @@
-// frontend/src/services/api.ts
 import axios from 'axios';
 import { User, Product, Order } from '../types';
 import { getEnv } from '../utils/environment';

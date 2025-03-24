@@ -1,4 +1,3 @@
-// AppContextTypes.ts
 import { User, Product } from '../types';
 
 export interface AppContextType {

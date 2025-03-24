@@ -1,4 +1,3 @@
-// AppProvider.tsx
 import React, { useState, useEffect, ReactNode, useCallback } from "react";
 import { User, Product } from "../types";
 import { getUsers, getProducts } from "../services/api";

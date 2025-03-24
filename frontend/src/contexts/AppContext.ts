@@ -1,4 +1,3 @@
-// AppContext.ts
 import { createContext } from 'react';
 import { AppContextType } from './AppContextTypes';
 

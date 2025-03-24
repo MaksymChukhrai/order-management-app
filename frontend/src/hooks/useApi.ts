@@ -1,4 +1,3 @@
-// frontend/src/hooks/useApi.ts
 import { useState, useCallback } from 'react';
 import { api } from '../services/api';
 import { User, Product, Order, CreateOrderDto } from '../types';

@@ -1,4 +1,4 @@
-// frontend/src/contexts/UserContext.tsx
+
 import React, { createContext, useState, useContext, useEffect, ReactNode } from 'react';
 import { User, UserContextType } from '../types';
 import { getUsers } from '../services/api';
