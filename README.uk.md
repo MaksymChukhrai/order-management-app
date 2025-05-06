@@ -1,6 +1,6 @@
-# Order Management Application
+# Додаток з управління замовленнями
 
-EN [Read in English](README.md)
+en [Read in English](README.md)
 
 ## Загальний опис
 
