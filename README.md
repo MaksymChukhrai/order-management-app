@@ -1,149 +1,146 @@
 # Order Management Application
 
-## Общее описание
+🇺🇦 [Read in Ukrainian](README.uk.md)
 
-Order Management Application - это полнофункциональное приложение для управления заказами, которое позволяет пользователям просматривать товары, создавать заказы и управлять своими покупками. Приложение обеспечивает взаимодействие с базой данных для хранения информации о пользователях, товарах и заказах, а также поддерживает транзакции при создании заказов и ограничение скорости запросов API.
+## General Description
 
-## Применяемые технологии
+Order Management Application is a full-featured order management application that allows users to browse products, create orders and manage their purchases. The application provides interaction with a database to store information about users, products and orders, and also supports transactions when creating orders and limiting API request rates.
+
+## Technologies Used
 
 ### Frontend
 
-- **React**: библиотека для создания пользовательского интерфейса
-- **TypeScript**: типизированный JavaScript для повышения качества кода
-- **Vite**: современный инструмент сборки для быстрой разработки
-- **Material-UI**: библиотека компонентов для современного дизайна
-- **Axios**: клиент HTTP для запросов к API
-- **React Router**: для маршрутизации в приложении
+- **React**: library for creating user interface
+- **TypeScript**: typed JavaScript for improved code quality
+- **Vite**: modern build tool for fast development
+- **Material-UI**: component library for modern design
+- **Axios**: HTTP client for API requests
+- **React Router**: for application routing
 
 ### Backend
 
-- **Node.js** -  платформа для выполнения JavaScript на сервере
-- **Express** -  веб-фреймворк для создания API
-- **MongoDB** -  NoSQL база данных для хранения данных
-- **Mongoose** -  ODM для MongoDB, обеспечивающая работу с моделями
-- **express-rate-limit** -  middleware для ограничения скорости запросов
-- **cors** -  middleware для поддержки CORS
-- **dotenv** -  работа с переменными окружения
-- **Winston** -  создание системы логирования
+- **Node.js** - platform for running JavaScript on the server
+- **Express** - web framework for creating APIs
+- **MongoDB** - NoSQL database for data storage
+- **Mongoose** - ODM for MongoDB, providing model operations
+- **express-rate-limit** - middleware for request rate limiting
+- **cors** - middleware for CORS support
+- **dotenv** - working with environment variables
+- **Winston** - creating a logging system
 
-### Тестирование  
+### Testing
 
-- **Jest** - применяется для модульных и интеграционных тестов
-- **babel-jest** и пресеты - транспиляция кода для тестов
-- **supertest** - используется для тестирования HTTP-запросов к API
+- **Jest** - used for unit and integration tests
+- **babel-jest** and presets - code transpilation for tests
+- **supertest** - used for testing HTTP requests to the API
 
-## Установка и запуск
+## Installation and Launch
 
-### Предварительные требования
+### Prerequisites
 
-* [Локальная установка Node.js v22+](https://nodejs.org/uk/download/current)
-* [Локальная установка MongoDB](https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.6-signed.msi)
+* [Local installation of Node.js v22+](https://nodejs.org/en/download/current)
+* [Local installation of MongoDB](https://fastdl.mongodb.org/windows/mongodb-windows-x86_64-8.0.6-signed.msi)
 
-### 🚀 Стандартная установка
+### 🚀 Standard Installation
 
-1. Клонировать репозиторий:
+1. Clone the repository:
 
 `git clone https://github.com/MaksymChukhrai/order-management-app.git`
 
-### Запуск в режиме разработки
+### Running in Development Mode
 
-#### NPM установка
+#### NPM Installation
 
-`cd <корневая папка проекта>` - перейти в корневую папку проекта  
-`npm install` - установка всех зависимостей проекта одной командой  
-`npm start` - запуск frontend, backend, MongoDB одновременно одной командой  
+`cd <project root folder>` - go to the project root folder  
+`npm install` - install all project dependencies with one command  
+`npm start` - start frontend, backend, MongoDB simultaneously with one command  
 
-##### Приложение будет доступно по адресу <http://localhost:5173>
+##### The application will be available at <http://localhost:5173>
 
-#### Установка через Docker
+#### Installation via Docker
 
-`docker-compose up --build` - сборка и запуск контейнеров  
-`docker-compose up -d` - запуск в фоновом режиме  
+`docker-compose up --build` - build and run containers  
+`docker-compose up -d` - run in background mode  
 
-##### Приложение будет доступно по адресу: <http://localhost:5173>
+##### The application will be available at: <http://localhost:5173>
 
-MongoDB будет доступна на порту 27017  
-Backend API будет доступен на порту 5000  
+MongoDB will be available on port 27017  
+Backend API will be available on port 5000  
 
-### Тестирование  
+### Testing
 
-Приложение включает автоматизированные тесты для проверки правильности работы API и бизнес-логики.
+The application includes automated tests to verify the correct functioning of the API and business logic.
 
-#### Запуск тестов
+#### Running Tests
 
-`npm test` - запуск всех тестов для фронтенда и бекенда. 20 шт.
+`npm test` - run all tests for frontend and backend. 20 in total.
 
-##### Запуск тестов через Docker
+##### Running Tests via Docker
 
 `docker-compose -f docker-compose.test.yml up`
 
-##### Тесты проверяют следующие аспекты:
+##### Tests check the following aspects:
 
-- **Модульные тесты**: Проверка ключевой бизнес-логики (проверка баланса, валидация запасов, расчет общей цены)
-- **API-тесты**: Проверка правильной работы всех эндпоинтов и обработки ошибок
-- **Транзакционные тесты**: Проверка, что частичные заказы не происходят (например, если списание баланса не удается, запасы остаются неизменными)
-- **Тесты ограничения скорости**: Проверка, что API ограничивает пользователей после превышения лимита (возвращает 429)
-- **Тесты для фронтенда**: 6 шт.
+- **Unit tests**: Testing key business logic (balance checking, stock validation, total price calculation)
+- **API tests**: Checking the correct operation of all endpoints and error handling
+- **Transaction tests**: Verifying that partial orders do not occur (e.g., if balance deduction fails, stocks remain unchanged)
+- **Rate limiting tests**: Checking that the API limits users after exceeding the limit (returns 429)
+- **Frontend tests**: 6 tests
 
-### Обработка HTTP-кодов ошибок (400, 403, 404, 429)
+### HTTP Error Code Handling (400, 403, 404, 429)
 
-Обработка ошибок с соответствующими HTTP-кодами реализована в нескольких местах:  
+Error handling with appropriate HTTP codes is implemented in several places:  
 
-1. `backend/controllers/orderController.js` - основной контроллер, где происходит обработка API-запросов и возврат соответствующих кодов ошибок:  
-    * 400 (Bad Request) - при неверных данных в запросе (например, отрицательное количество)  
-    * 403 (Forbidden) - при недостаточном балансе пользователя для оформления заказа  
-    * 404 (Not Found) - если пользователь или продукт не найдены  
+1. `backend/controllers/orderController.js` - the main controller where API requests are processed and appropriate error codes are returned:  
+    * 400 (Bad Request) - for invalid data in the request (e.g., negative quantity)  
+    * 403 (Forbidden) - when the user has insufficient balance to place an order  
+    * 404 (Not Found) - if the user or product is not found  
 
-2. `backend/middleware/rateLimiter.js` - middleware для ограничения скорости запросов: 
-    * 429 (Too Many Requests) - возвращается, когда пользователь превышает лимит запросов (10 в минуту)
+2. `backend/middleware/rateLimiter.js` - middleware for request rate limiting: 
+    * 429 (Too Many Requests) - returned when a user exceeds the request limit (10 per minute)
 
+3. `backend/middleware/errorHandler.js` - centralized error handling:
+    * Converts Mongoose and other library errors into appropriate HTTP codes  
+    * Formats error messages for better readability  
+    * Adds additional information for debugging in development mode  
 
-3. `backend/middleware/errorHandler.js` - централизованная обработка ошибок:
-    * Преобразует ошибки Mongoose и других библиотек в соответствующие HTTP-коды  
-    * Форматирует сообщения об ошибках для лучшей читаемости  
-    * Добавляет дополнительную информацию для отладки в режиме разработки  
+4. `frontend/src/services/api.ts` - client-side error handling:  
+    * Intercepts API request errors  
+    * Extracts error messages from the server response  
+    * Passes error information to components for display to the user  
 
+This multi-level error handling provides informative messages for the user and allows for efficient application debugging.  
 
-4. `frontend/src/services/api.ts` - клиентская часть обработки ошибок:  
-    * Перехватывает ошибки API-запросов  
-    * Извлекает сообщения об ошибках из ответа сервера  
-    * Передает информацию об ошибках в компоненты для отображения пользователю  
-
-Такая многоуровневая обработка ошибок обеспечивает информативные сообщения для пользователя и позволяет эффективно отлаживать приложение.  
-
-
-## Структура проекта
+## Project Structure
 
 ```
 order-management-app/
-├── backend/           # Серверная часть на Node.js/Express
-│   ├── controllers/   # Обработчики запросов и кодов ошибок (400, 403, 404, 429)
-│   ├── logs/          # Файлы логов операций, API запросов и ошибок
-│   ├── middleware/    # Промежуточное ПО (rate limiting, логирование)
-│   ├── models/        # Mongoose модели данных
-│   ├── routes/        # API маршруты
-│   ├── tests/         # Тесты для бэкенда
-│   ├── package.json   # Зависимости и скрипты для отдельного запуска бэкенда 
-│   ├── seeder.js      # Скрипт для заполнения БД тестовыми данными (пользователи и товары)  
-│   └── server.js      # Точка входа для сервера
-├── frontend/          # Клиентская часть на React/TypeScript
-│   ├── public/        # Статические файлы
-│   ├── src/           # Исходный код
-│   │   ├── _tests_/   # Тесты для фронтенда
-│   │   ├── components/# React компоненты
-│   │   ├── contexts/  # React контексты для управления состоянием
-│   │   ├── hooks/     # Пользовательские React хуки
-│   │   ├── pages/     # Компоненты страниц
-│   │   ├── services/  # Сервисы для работы с API
-│   │   ├── types/     # TypeScript типы и интерфейсы
-│   │   └── App.tsx    # Корневой компонент приложения
-│   ├── Dockerfile     # Инструкции для создания Docker-образа фронтенда
-│   ├── package.json   # Зависимости и скрипты для отдельного запуска фронтенда
-│   └── index.html     # Основной HTML файл
-├── docker-compose.yml # Конфигурация для запуска всех контейнеров (frontend, backend, mongodb)
-└── package.json       # Корневые зависимости и скрипты для запуска всего проекта
+├── backend/           # Server-side with Node.js/Express
+│   ├── controllers/   # Request handlers and error codes (400, 403, 404, 429)
+│   ├── logs/          # Log files for operations, API requests and errors
+│   ├── middleware/    # Middleware (rate limiting, logging)
+│   ├── models/        # Mongoose data models
+│   ├── routes/        # API routes
+│   ├── tests/         # Backend tests
+│   ├── package.json   # Dependencies and scripts for separate backend launch
+│   ├── seeder.js      # Script for populating the DB with test data (users and products)
+│   └── server.js      # Server entry point
+├── frontend/          # Client-side with React/TypeScript
+│   ├── public/        # Static files
+│   ├── src/           # Source code
+│   │   ├── tests/   # Frontend tests
+│   │   ├── components/# React components
+│   │   ├── contexts/  # React contexts for state management
+│   │   ├── hooks/     # Custom React hooks
+│   │   ├── pages/     # Page components
+│   │   ├── services/  # Services for working with API
+│   │   ├── types/     # TypeScript types and interfaces
+│   │   └── App.tsx    # Root application component
+│   ├── Dockerfile     # Instructions for creating frontend Docker image
+│   ├── package.json   # Dependencies and scripts for separate frontend launch
+│   └── index.html     # Main HTML file
+├── docker-compose.yml # Configuration for running all containers (frontend, backend, mongodb)
+└── package.json       # Root dependencies and scripts for launching the entire project
 ```
 
-### Автор
-
-Максим Чухрай
+**Author: [Maksym Chukhrai](https://www.mchukhrai.com/)**
